@@ -9,6 +9,7 @@ import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -25,18 +26,19 @@ import javafx.util.Duration;
  * JavaFX App
  */
 public class StreamVisBoard extends Application implements StreamVis {
-	private final HBox columns = new HBox(PIPE_DISTANCE);
+	//private final HBox columns = new HBox(PIPE_DISTANCE);
+	private final Group group = new Group();
 	private final ObservableList<Pipe<?>> pipes = FXCollections.observableArrayList();
 
 	private static final int PIPE_DISTANCE = 200;
 	private static final double RADIUS = 30;
-	private static final double SEC_DURATION = 0;
+	private static final double SEC_DURATION = 1;
 
 	@Override
 	public void start(@SuppressWarnings("exports") Stage stage) {
 		Pipe.board = this;
 		Button startButton = new Button("Start");
-		VBox vBox = new VBox(startButton, columns);
+		VBox vBox = new VBox(startButton, group/*columns*/);
 		var scene = new Scene(vBox);
 		startButton.setOnAction(e -> {
 			Pipe.generate(10, i->i-1).map(i->i*i).filter(i->i%2!=0).limit(2).sorted(Integer::compare).toArray(Integer[]::new);
@@ -60,11 +62,7 @@ public class StreamVisBoard extends Application implements StreamVis {
 	}
 
 	private void registerPipe(Pipe<?> p, int idx) {
-		TableView<String> table = new TableView<String>(p.shapes);
-		table.setMinWidth(PIPE_DISTANCE);
-		TableColumn<String, String> col = new TableColumn<>(p.name);
-		table.getColumns().add(col);
-		columns.getChildren().add(table);
+		//TODO
 	}
 
 	public void add(Pipe<?> pipe) {
@@ -75,25 +73,22 @@ public class StreamVisBoard extends Application implements StreamVis {
 		launch();
 	}
 	
-	private void printHeader() {
-		for(Pipe<?> pipe: pipes) {
-			System.out.print("%-20s".formatted(pipe.name));
-		}
-		System.out.println();
-	}
-
 	public void animateFetch(Pipe<?> pipe) {
 		//TODO animation
 	}
 
 	public <T> void animate(Pipe<T> pipe, T t) {
 		
-//		Circle circle = new Circle((pipe.pipeIndex+0.5)*PIPE_DISTANCE, 50, RADIUS, Color.LIGHTBLUE);
-//		Label label = new Label(s,circle);
-//		//TODO animation
-//		TranslateTransition transition = new TranslateTransition(Duration.seconds(SEC_DURATION), label);
-//		transition.setToX((pipe.pipeIndex+1.5)*PIPE_DISTANCE);
-//		transition.setInterpolator(Interpolator.EASE_BOTH);
+		
+		Circle circle = new Circle((pipe.pipeIndex+0.5)*PIPE_DISTANCE, 50, RADIUS, Color.LIGHTBLUE);
+		group.getChildren().add(circle);
+		Label label = new Label(VisStringConverter.convert(t),circle);
+		//TODO animation
+		TranslateTransition transition = new TranslateTransition(Duration.seconds(SEC_DURATION), label);
+		transition.setByX(PIPE_DISTANCE);
+		transition.setInterpolator(Interpolator.EASE_BOTH);
+		transition.play();
+		transition.setOnFinished(System.out::println);
 //		Platform.runLater(transition::play);
 		
 	}

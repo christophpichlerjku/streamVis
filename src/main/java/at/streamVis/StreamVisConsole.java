@@ -13,7 +13,7 @@ public class StreamVisConsole implements StreamVis {
 		StreamVisConsole console = new StreamVisConsole();
 		Pipe.board = console;
 		//
-		Pipe.generate(10, i->i-1).map(i->i*i).filter(i->i%2!=0).limit(2).sorted(Integer::compare).toArray(Integer[]::new);
+		Pipe.generate(10, i->i-1).map(i->i*i).filter(i->i%2!=0).limit(2).sorted(Integer::compare).count();//toArray(Integer[]::new);
 	}
 
 	private void printHeader() {
